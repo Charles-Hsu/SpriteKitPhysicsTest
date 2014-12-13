@@ -21,6 +21,8 @@ scene.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
 scene.physicsBody = SKPhysicsBody(edgeLoopFromRect: scene.frame)
 
 sceneView.showsFPS = true
+sceneView.showsPhysics = true
+
 sceneView.presentScene(scene)
 
 XCPShowView("My Scene", sceneView)
@@ -47,8 +49,6 @@ square.physicsBody = SKPhysicsBody(rectangleOfSize: square.frame.size)
 
 var trianglePath = CGPathCreateMutable()
 
-
-
 triangle.anchorPoint // default (0.5, 0.5)
 
 triangle.size.width
@@ -58,35 +58,32 @@ triangle.size.height
 // moveTo
 CGPathMoveToPoint(trianglePath, nil, -triangle.size.width/2, -triangle.size.height/2)
 
-println("moveTo")
--triangle.size.width/2
--triangle.size.height/2
-
+//println("moveTo (\(-triangle.size.width/2),\(-triangle.size.height/2))")
 
 // AddLineTo
 CGPathAddLineToPoint(trianglePath, nil, triangle.size.width/2, -triangle.size.height/2)
 
-println("addLineTo")
-triangle.size.width/2
--triangle.size.height/2
+//println("addLineTo (\(triangle.size.width/2),\(-triangle.size.height/2))")
 
 // AddLineTo
 CGPathAddLineToPoint(trianglePath, nil, 0, triangle.size.height/2)
 
-println("addLineTo")
-0
-triangle.size.height/2
+//println("addLineTo (\(0),\(triangle.size.height/2))")
 
 // AddLineTo
 CGPathAddLineToPoint(trianglePath, nil, -triangle.size.width/2, -triangle.size.height/2)
 
-println("addLineTo")
--triangle.size.width/2
--triangle.size.height/2
-
-
+//println("addLineTo (\(-triangle.size.width/2),\(-triangle.size.height/2))")
 
 triangle.physicsBody = SKPhysicsBody(polygonFromPath: trianglePath)
+
+
+let l = SKSpriteNode(imageNamed: "L")
+l.position = CGPoint(x: scene.size.width * 0.5, y: scene.size.height * 0.75)
+l.physicsBody = SKPhysicsBody(texture: l.texture, size: l.size)
+scene.addChild(l)
+
+
 
 func random(#min: CGFloat, #max: CGFloat) -> CGFloat {
     return CGFloat(Float(arc4random()) / Float(0xffffffff)) * (max - min) + min
@@ -98,8 +95,24 @@ func spawnSand() {
     
     sand.physicsBody = SKPhysicsBody(circleOfRadius: sand.size.width/2)
     sand.name = "sand"
+    sand.physicsBody!.restitution = 1.0
+    sand.physicsBody!.density = 20.0
+    
     scene.addChild(sand)
     
+}
+
+func shake() {
+    scene.enumerateChildNodesWithName("sand") { node, _ in
+        node.physicsBody!.applyImpulse(CGVector(dx: 0, dy: random(min:20, max:40)))
+    }
+    
+    scene.enumerateChildNodesWithName("shape") { node, _ in
+        node.physicsBody!.applyImpulse(CGVector(dx: random(min:20, max:60), dy:
+            random(min:20, max:60)))
+    }
+    
+    delay(seconds: 3, shake)
 }
 
 
@@ -117,8 +130,10 @@ delay(seconds: 2.0) {
         ]),
         count: 100))
     
+    delay(seconds: 8, shake)
     
 }
+
 
 
 
