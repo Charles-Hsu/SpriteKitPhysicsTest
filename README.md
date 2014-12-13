@@ -25,4 +25,4 @@ triangle.physicsBody = SKPhysicsBody(polygonFromPath: trianglePath)
 ```
 default 的錨點在 (0.5, 0.5), 也就是 SKPriteNode 的中心點, 因為 triangle 圖檔的大小為 70x70, 中心點為 (0,0), 所以 (-35, -35) 也就是左下角的座標. 然後 AddLineTo (35, -35), 也就是三角形右下角的座標. 然後再移到 (0, 35) 也就是三角形的上頂點. 最後再移回 (-35, -35).
 
-![]()
+![](https://github.com/Charles-Hsu/SpriteKitPhysicsTest/blob/master/triangle.png)
