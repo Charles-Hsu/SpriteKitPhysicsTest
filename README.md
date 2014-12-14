@@ -58,6 +58,13 @@ square.physicsBody!.restitution = 0.5
 
 不小心設定了 5.0, 結果一 shake(), square 就不見蹤影了 :]
 
+最後, 把 circle 的 dynamic 設為 false, 在 touchesBegan() 裡將 circle 的 allActions 拿掉, 並且讓 circle 移到所 touch 的地方.
 
+```swift
+let touch = touches.anyObject() as UITouch
+let touchLocation = touch.locationInNode(self)
+circle.removeAllActions()
+circle.runAction(SKAction.moveTo(touchLocation, duration: 1.0))
+```
 
-
+Done!

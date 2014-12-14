@@ -24,6 +24,12 @@ class GameScene: SKScene {
     let triangle = SKSpriteNode(imageNamed: "triangle")
     let circle = SKSpriteNode(imageNamed: "circle")
     
+    var dt: NSTimeInterval = 0
+    var lastUpdateTime: NSTimeInterval = 0
+    var windForce: CGVector = CGVector(dx:0, dy:0)
+    var blowing: Bool = false
+    var timeUntilSwitchingDirection: NSTimeInterval = 0
+    
     func delay(#seconds: Double, completion:()->()) {
         let popTime = dispatch_time(DISPATCH_TIME_NOW,
             Int64( Double(NSEC_PER_SEC) * seconds ))
@@ -44,9 +50,9 @@ class GameScene: SKScene {
         
         let sand: SKSpriteNode = SKSpriteNode(imageNamed: "sand")
         
-        println("spawnSand()->random(): \(self.size.width)")
+        //println("spawnSand()->random(): \(self.size.width)")
         sand.position = CGPoint(x: random(min: 0, max: self.size.width), y: self.size.height - sand.size.height)
-        println("spawnSand()->\(sand.position)")
+        //println("spawnSand()->\(sand.position)")
 
         sand.physicsBody = SKPhysicsBody(circleOfRadius: sand.size.width/2)
         sand.name = "sand"
@@ -87,7 +93,6 @@ class GameScene: SKScene {
         circle.position = CGPoint(x: self.size.width*0.5, y: self.size.height * 0.5)
             
         square.name = "shape"
-            
         circle.name = "shape"
         triangle.name = "shape"
         
@@ -96,6 +101,8 @@ class GameScene: SKScene {
         addChild(circle)
 
         circle.physicsBody = SKPhysicsBody(circleOfRadius: circle.size.width/2)
+        circle.physicsBody!.dynamic = false
+        
         square.physicsBody = SKPhysicsBody(rectangleOfSize: square.frame.size)
             
         square.physicsBody!.restitution = 1.0
@@ -161,6 +168,20 @@ class GameScene: SKScene {
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         /* Called when a touch begins */
+
+        let touch = touches.anyObject() as UITouch
+        let touchLocation = touch.locationInNode(self)
+        
+        println("touchLocation=\(touchLocation)")
+        
+        circle.removeAllActions()
+        
+        circle.runAction(SKAction.moveTo(touchLocation, duration: 1.0))
+        
+        //let touchLocation = touch.locationInNode(backgroundLayer)
+        //sceneTouched(touchLocation)
+
+        
         
         for touch: AnyObject in touches {
         
@@ -182,7 +203,44 @@ class GameScene: SKScene {
         }
     }
    
+    
+    func windBlowing() {
+        self.enumerateChildNodesWithName("sand") { node, _ in
+            node.physicsBody!.applyForce(self.windForce)
+        }
+        
+        self.enumerateChildNodesWithName("shape") { node, _ in
+            node.physicsBody!.applyForce(self.windForce)
+        }
+        
+        //delay(seconds: 3, shake)
+    }
+
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        
+        if lastUpdateTime > 0 {
+            dt = currentTime - lastUpdateTime
+        }
+        else {
+            dt = 0
+        }
+        
+        lastUpdateTime = currentTime
+        
+        timeUntilSwitchingDirection -= dt
+        
+        if timeUntilSwitchingDirection < 0 {
+            timeUntilSwitchingDirection = NSTimeInterval(random(min: 1, max: 5))
+            windForce = CGVector(dx: random(min: -50, max: 50), dy: 0)
+            
+            //println("windForce=(\(windForce.dx),\(windForce.dy))")
+            
+            
+        }
+        
+        windBlowing()
+        
+        
     }
 }
