@@ -18,12 +18,14 @@ class GameViewController: UIViewController {
         //if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
             // Configure the view.
         
-        let scene = GameScene(size: CGSizeMake(480, 320))
+        let screenSize: CGRect = UIScreen.mainScreen().bounds
+        
+        let scene = GameScene(size: CGSizeMake(screenSize.size.width, screenSize.size.height))
         
             let skView = self.view as SKView
+        
             skView.showsFPS = true
             skView.showsNodeCount = true
-        
         
         skView.showsPhysics = true
             
@@ -32,10 +34,6 @@ class GameViewController: UIViewController {
             
             /* Set the scale mode to scale to fit the window */
             scene.scaleMode = .AspectFill
-        
-        
-        scene.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-        scene.physicsBody = SKPhysicsBody(edgeLoopFromRect: scene.frame)
             
             skView.presentScene(scene)
         //}
